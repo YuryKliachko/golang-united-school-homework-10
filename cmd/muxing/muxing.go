@@ -31,14 +31,14 @@ func Start(host string, port int) {
 	router.HandleFunc("/header", func(w http.ResponseWriter, r *http.Request) {
 		a, _ := strconv.Atoi(r.Header.Get("a"))
 		b, _ := strconv.Atoi(r.Header.Get("b"))
+		w.Header().Set("a+b", strconv.Itoa(a+b))
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, "\"a+b\": ", "\"", a+b, "\"")
 	}).Methods("GET")
 
 	router.HandleFunc("/name/{name}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, "Hello,", vars["name"])
+		fmt.Fprint(w, "Hello, ", vars["name"], "!")
 	}).Methods("GET")
 
 	router.HandleFunc("/bad", func(w http.ResponseWriter, r *http.Request) {
