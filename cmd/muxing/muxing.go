@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -20,6 +21,29 @@ main function reads host/port from env just for an example, flavor it following 
 // Start /** Starts the web server listener on given host and port.
 func Start(host string, port int) {
 	router := mux.NewRouter()
+
+	router.HandleFunc("/data", func(w http.ResponseWriter, r *http.Request) {
+		body, _ := ioutil.ReadAll(r.Body)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, "I got message", string(body))
+	}).Methods("POST")
+
+	router.HandleFunc("/header", func(w http.ResponseWriter, r *http.Request) {
+		a, _ := strconv.Atoi(r.Header.Get("a"))
+		b, _ := strconv.Atoi(r.Header.Get("b"))
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, "\"a+b\": ", "\"", a+b, "\"")
+	}).Methods("GET")
+
+	router.HandleFunc("/name/{name}", func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, "Hello,", vars["name"])
+	}).Methods("GET")
+
+	router.HandleFunc("/bad", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	}).Methods("GET")
 
 	log.Println(fmt.Printf("Starting API server on %s:%d\n", host, port))
 	if err := http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), router); err != nil {
