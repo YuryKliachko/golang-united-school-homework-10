@@ -25,7 +25,7 @@ func Start(host string, port int) {
 	router.HandleFunc("/data", func(w http.ResponseWriter, r *http.Request) {
 		body, _ := ioutil.ReadAll(r.Body)
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintln(w, "I got message", string(body))
+		fmt.Fprint(w, "I got message:\n", string(body))
 	}).Methods("POST")
 
 	router.HandleFunc("/header", func(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +38,7 @@ func Start(host string, port int) {
 	router.HandleFunc("/name/{name}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintln(w, "Hello,", vars["name"])
+		fmt.Fprint(w, "Hello,", vars["name"])
 	}).Methods("GET")
 
 	router.HandleFunc("/bad", func(w http.ResponseWriter, r *http.Request) {
